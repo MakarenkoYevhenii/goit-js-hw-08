@@ -13,12 +13,12 @@ if (!localStorage.length) {
   }
 };
 
-throttle(proslushka,2)
 const proslushka = contactFormEl.addEventListener('input', event => {
     const target = event.target;
     localStorage.setItem(target.name, target.value);
 });
 
+throttle(proslushka,2)
 contactFormEl.addEventListener('submit', event => {
     event.preventDefault();
     
