@@ -1,27 +1,37 @@
 import { set, throttle } from 'lodash';
 
 const contactFormEl = document.querySelector('.feedback-form');
+const formData = {};
 
-const fillEmailField = () => {
-if (!localStorage.length) {
-  return;
-}
-  const keys = Object.keys(localStorage);
+contactFormEl.addEventListener('input', throttle(event => {
+  const target = event.target;
 
-  for (const key of keys) {
-    contactFormEl.elements[key].value = localStorage.getItem(key);
-  }
-};
+  formData[target.name] = target.value;
 
-const proslushka = contactFormEl.addEventListener('input', throttle((event)  => {
-    const target = event.target;
-    localStorage.setItem(target.name, target.value);
+    localStorage.setItem('formData', JSON.stringify(formData));
+//   localStorageApi.save('formData', formData);
 },500));
 
 contactFormEl.addEventListener('submit', event => {
-    event.preventDefault();
-    
-    event.target.reset();
-    localStorage.clear();
+  event.preventDefault();
+    console.log(formData);
+  event.target.reset();
+    localStorage.removeItem('formData');
+//   localStorageApi.remove('formData');
 });
-fillEmailField();
+
+const fillFormFields = () => {
+  if (!localStorage.length) {
+    return;
+  }
+
+    const localStorageFormData = JSON.parse(localStorage.getItem('formData'));
+//   const localStorageFormData = localStorageApi.load('formData');
+  const keys = Object.keys(localStorageFormData);
+
+  for (const key of keys) {
+    contactFormEl.elements[key].value = localStorageFormData[key];
+  }
+};
+
+fillFormFields();
