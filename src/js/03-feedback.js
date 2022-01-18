@@ -1,38 +1,44 @@
-import { set, throttle } from 'lodash';
+import throttle from 'lodash.throttle';
 
-
-const contactFormEl = document.querySelector('.feedback-form');
-const formData = {};
-
-contactFormEl.addEventListener('input', throttle(event => {
-    const target = event.target;
-  
-    formData[target.name] = target.value;
-  
-      localStorage.setItem('formData', JSON.stringify(formData));
-  //   localStorageApi.save('formData', formData);
-  },500));
-
-contactFormEl.addEventListener('submit', event => {
-  event.preventDefault();
-  if(formData.message&&formData.email){
-    console.log(formData);}
-  event.target.reset();
-    localStorage.removeItem('formData');
-//   localStorageApi.remove('formData');
-});
-
-const fillFormFields = () => {
-  if (!localStorage.length) {
-    return;
-  }
-
-    const localStorageFormData = JSON.parse(localStorage.getItem('formData'));
-//   const localStorageFormData = localStorageApi.load('formData');
-  const keys = Object.keys(localStorageFormData);
-
-  for (const key of keys) {
-    contactFormEl.elements[key].value = localStorageFormData[key];
-  }
+const refs = {
+    form: document.querySelector('.feedback-form'),
+    textarea: document.querySelector('.feedback-form textarea'),
+    input: document.querySelector(".feedback-form input")
 };
 
+const STORAGE_KEY = "feedba0ck-form-state";
+let formData = {};
+populateTextarea();
+
+refs.form.addEventListener('submit', onFormSubmit);
+refs.form.addEventListener('input', throttle(onTextareaInput, 500));
+
+function onFormSubmit(evt) {
+    evt.preventDefault();
+    if(formData.message&&formData.email){
+        console.log(formData)
+    }
+    evt.currentTarget.reset();
+    localStorage.removeItem(STORAGE_KEY);
+};
+
+
+function onTextareaInput(evt) {
+    formData[evt.target.name] = evt.target.value;
+  const saveDataEl = JSON.stringify(formData);
+  localStorage.setItem(STORAGE_KEY, saveDataEl);
+};
+
+function populateTextarea() {
+    const savedMessage = localStorage.getItem(STORAGE_KEY);
+   
+    if (savedMessage) {
+        const pasrsedSav = JSON.parse(savedMessage);
+        const keys = Object.keys(pasrsedSav);
+
+        for (const key of keys) {
+            refs.form.elements[key].value = pasrsedSav[key];
+            formData[key] = pasrsedSav[key];
+        }
+    }
+}
