@@ -25,3 +25,6 @@ const makeGalleryCard = ({preview, original,description} = {}) => {
   let nameOfPictures = new SimpleLightbox('.gallery a',{captionsData: "alt" , captionDelay:250 });
 
 console.log(galleryEL);
+if(formData.message&&formData.email){
+    console.log(formData)
+}
